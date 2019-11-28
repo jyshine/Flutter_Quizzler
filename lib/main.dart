@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'question.dart';
+import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+QuizBrain quizBrain = QuizBrain();
 
 void main() => runApp(Quizzler());
 
@@ -36,15 +39,44 @@ class _QuizPageState extends State<QuizPage> {
 //
 //  List<bool> answers = [false, true, true];
 
-  int questionNumber = 0;
+//  int questionNumber = 0;
 
-  List<Question> questionBank = [
-    Question(q: 'You can lead a cow down stairs but not up stairs.', a: false),
-    Question(
-        q: 'Approximately one quarter of human bones are in the feet.',
-        a: true),
-    Question(q: 'A slug\'s blood is green.', a: true)
-  ];
+//  List<Question> questionBank = [
+//    Question(q: 'You can lead a cow down stairs but not up stairs.', a: false),
+//    Question(
+//        q: 'Approximately one quarter of human bones are in the feet.',
+//        a: true),
+//    Question(q: 'A slug\'s blood is green.', a: true)
+//  ];
+
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getQuestionAnswer();
+
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        Alert(
+          context: context,
+          title: 'Finished!',
+          desc: 'You\'ve reached the end of the quiz.',
+        ).show();
+        quizBrain.reset();
+        scoreKeeper = [];
+      } else {
+        if (correctAnswer == userPickedAnswer) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+        quizBrain.nextQuestion();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +90,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questionBank[questionNumber].questionText,
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -82,16 +114,16 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer =
-                    questionBank[questionNumber].questionAnswer;
-                if (correctAnswer == true) {
-                  print('user got it right');
-                } else {
-                  print('user got it wrong');
-                }
-                setState(() {
-                  questionNumber++;
-                });
+                checkAnswer(true);
+//                bool correctAnswer = quizBrain.getQuestionAnswer();
+//                if (correctAnswer == true) {
+//                  print('user got it right');
+//                } else {
+//                  print('user got it wrong');
+//                }
+//                setState(() {
+//                  quizBrain.nextQuestion();
+//                });
                 //The user picked true.
               },
             ),
@@ -110,19 +142,19 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                checkAnswer(false);
                 //The user picked false.
-                setState(() {
-                  bool correctAnswer =
-                      questionBank[questionNumber].questionAnswer;
-                  if (correctAnswer == false) {
-                    print('user got it right');
-                  } else {
-                    print('user got it wrong');
-                  }
-                  setState(() {
-                    questionNumber++;
-                  });
-                });
+//                setState(() {
+//                  bool correctAnswer = quizBrain.getQuestionAnswer();
+//                  if (correctAnswer == false) {
+//                    print('user got it right');
+//                  } else {
+//                    print('user got it wrong');
+//                  }
+//                  setState(() {
+//                    quizBrain.nextQuestion();
+//                  });
+//                });
               },
             ),
           ),
